@@ -1,0 +1,30 @@
+name: Build Custom Fluent
+
+on:
+  workflow_dispatch: # คำสั่งนี้จะทำให้เรามีปุ่มกด Run ได้ด้วยตัวเองเมื่อต้องการ
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 ดึงข้อมูลโค้ด (Checkout Code)
+        uses: actions/checkout@v4
+
+      - name: ⚙️ ตั้งค่าระบบ (Setup Node.js)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 ติดตั้งโปรแกรมรวมไฟล์ (Install Luabundler)
+        run: npm install -g luabundler
+
+      - name: 🔨 เริ่มการรวมไฟล์ (Bundle Script)
+        run: |
+          luabundler bundle src/main.lua -p "src/?.lua" -o CustomFluent.lua
+          
+      - name: 📤 อัปโหลดไฟล์ที่เสร็จแล้ว (Upload Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: CustomFluent-Build
+          path: CustomFluent.lua
